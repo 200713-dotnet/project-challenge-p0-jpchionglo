@@ -70,6 +70,8 @@ create table [Order].[Order](
 
   OrderID int primary key,
   DateOrdered nvarchar(100) not null,
+  UserID int foreign key references [User].[User](UserID),
+  StoreID int foreign key references Store.Store(StoreID),
   Placed bit,
   Completed bit
 
@@ -82,6 +84,16 @@ create table [Order].Pizza(
   PizzaOrderID int primary key,
   OrderID int foreign key references [Order].[Order](OrderID),
   PizzaID int foreign key references Pizza.Pizza(PizzaID)
+
+);
+go
+
+--Pizza to Topping Junction Table
+create table Pizza.PizzaTopping(
+
+  PizzaToppingID int primary key,
+  PizzaID int foreign key references Pizza.Pizza(PizzaID),
+  ToppingID int foreign key references Pizza.Topping(ToppingID)
 
 );
 go
@@ -166,3 +178,14 @@ insert into Pizza.Size(SizeID, [Name])
 values (3, 'large');
 go
 
+insert into Pizza.Pizza(PizzaID, CrustID, SizeID, Name)
+values (1, 1, 2, 'Meat Lovers');
+insert into Pizza.Pizza(PizzaID, CrustID, SizeID, Name)
+values (2, 1, 2, 'Fred Special');
+insert into Pizza.Pizza(PizzaID, CrustID, SizeID, Name)
+values (3, 1, 2, 'Jeremy Special');
+insert into Pizza.Pizza(PizzaID, CrustID, SizeID, Name)
+values (4, 1, 2, 'Deluxe');
+go
+
+insert into Order.Pizza()

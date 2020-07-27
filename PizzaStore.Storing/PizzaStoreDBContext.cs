@@ -21,6 +21,7 @@ namespace PizzaStore.Storing
         public virtual DbSet<Order1> Order1 { get; set; }
         public virtual DbSet<Pizza> Pizza { get; set; }
         public virtual DbSet<Pizza1> Pizza1 { get; set; }
+        public virtual DbSet<PizzaTopping> PizzaTopping { get; set; }
         public virtual DbSet<Size> Size { get; set; }
         public virtual DbSet<Store> Store { get; set; }
         public virtual DbSet<Topping> Topping { get; set; }
@@ -78,12 +79,26 @@ namespace PizzaStore.Storing
                 entity.Property(e => e.DateOrdered)
                     .IsRequired()
                     .HasMaxLength(100);
+
+                entity.Property(e => e.StoreId).HasColumnName("StoreID");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.HasOne(d => d.Store)
+                    .WithMany(p => p.Order)
+                    .HasForeignKey(d => d.StoreId)
+                    .HasConstraintName("FK__Order__StoreID__72C60C4A");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Order)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK__Order__UserID__71D1E811");
             });
 
             modelBuilder.Entity<Order1>(entity =>
             {
                 entity.HasKey(e => e.StoreOrderId)
-                    .HasName("PK__Order__A74CB93A67A9B38D");
+                    .HasName("PK__Order__A74CB93A906F38F9");
 
                 entity.ToTable("Order", "Store");
 
@@ -98,18 +113,18 @@ namespace PizzaStore.Storing
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.Order1)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__Order__OrderID__6EF57B66");
+                    .HasConstraintName("FK__Order__OrderID__7A672E12");
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Order1)
                     .HasForeignKey(d => d.StoreId)
-                    .HasConstraintName("FK__Order__StoreID__6E01572D");
+                    .HasConstraintName("FK__Order__StoreID__797309D9");
             });
 
             modelBuilder.Entity<Pizza>(entity =>
             {
                 entity.HasKey(e => e.PizzaOrderId)
-                    .HasName("PK__Pizza__EA09DF5DE6CB28C6");
+                    .HasName("PK__Pizza__EA09DF5D8686063B");
 
                 entity.ToTable("Pizza", "Order");
 
@@ -124,12 +139,12 @@ namespace PizzaStore.Storing
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.Pizza)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__Pizza__OrderID__5535A963");
+                    .HasConstraintName("FK__Pizza__OrderID__75A278F5");
 
                 entity.HasOne(d => d.PizzaNavigation)
                     .WithMany(p => p.Pizza)
                     .HasForeignKey(d => d.PizzaId)
-                    .HasConstraintName("FK__Pizza__PizzaID__5629CD9C");
+                    .HasConstraintName("FK__Pizza__PizzaID__76969D2E");
             });
 
             modelBuilder.Entity<Pizza1>(entity =>
@@ -160,6 +175,29 @@ namespace PizzaStore.Storing
                     .WithMany(p => p.Pizza1)
                     .HasForeignKey(d => d.SizeId)
                     .HasConstraintName("FK__Pizza__SizeID__5070F446");
+            });
+
+            modelBuilder.Entity<PizzaTopping>(entity =>
+            {
+                entity.ToTable("PizzaTopping", "Pizza");
+
+                entity.Property(e => e.PizzaToppingId)
+                    .HasColumnName("PizzaToppingID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.PizzaId).HasColumnName("PizzaID");
+
+                entity.Property(e => e.ToppingId).HasColumnName("ToppingID");
+
+                entity.HasOne(d => d.Pizza)
+                    .WithMany(p => p.PizzaTopping)
+                    .HasForeignKey(d => d.PizzaId)
+                    .HasConstraintName("FK__PizzaTopp__Pizza__7D439ABD");
+
+                entity.HasOne(d => d.Topping)
+                    .WithMany(p => p.PizzaTopping)
+                    .HasForeignKey(d => d.ToppingId)
+                    .HasConstraintName("FK__PizzaTopp__Toppi__7E37BEF6");
             });
 
             modelBuilder.Entity<Size>(entity =>

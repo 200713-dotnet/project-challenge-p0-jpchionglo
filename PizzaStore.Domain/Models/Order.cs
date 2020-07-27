@@ -25,6 +25,15 @@ namespace PizzaStore.Domain.Models
 
     }
 
+    public Order(List<Pizza> pizzas, DateTime dateOrdered, bool placed, bool completed){
+
+      Pizzas = pizzas;
+      DateOrdered = dateOrdered;
+      Placed = placed;
+      Completed = completed;
+
+    }
+
     public void PlaceOrder()
     {
 

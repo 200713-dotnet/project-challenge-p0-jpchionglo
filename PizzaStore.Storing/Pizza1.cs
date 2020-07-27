@@ -8,6 +8,7 @@ namespace PizzaStore.Storing
         public Pizza1()
         {
             Pizza = new HashSet<Pizza>();
+            PizzaTopping = new HashSet<PizzaTopping>();
         }
 
         public int PizzaId { get; set; }
@@ -18,5 +19,6 @@ namespace PizzaStore.Storing
         public virtual Crust Crust { get; set; }
         public virtual Size Size { get; set; }
         public virtual ICollection<Pizza> Pizza { get; set; }
+        public virtual ICollection<PizzaTopping> PizzaTopping { get; set; }
     }
 }

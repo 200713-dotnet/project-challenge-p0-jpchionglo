@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using PizzaStore.Domain.Models;
+using System.Linq;
 
 namespace PizzaStore.Client
 {
     class Program
     {
-        //var db = new databasecontext
         static void Main(string[] args)
         {
+            var db = new PizzaStore.Storing.PizzaStoreDBContext();
+            
+
+
             Console.WriteLine("Welcome to the PizzaStore Application!");
             bool running = true;
             
@@ -24,8 +28,38 @@ namespace PizzaStore.Client
               switch (input){
 
                 case "1":
+
                   User user = new User();
-                  //user login
+                  Console.WriteLine("Enter the username: ");
+                  string username = Console.ReadLine();
+                  Console.WriteLine("Enter the password: ");
+                  string password = Console.ReadLine();
+                  int uID = 0;
+                  foreach (var un in db.Login.ToList()){
+                  
+                    if (un.Username.Equals(username)){
+                      uID = un.LoginId;
+                    }
+
+                  }
+                  
+                  
+                  foreach (var us in db.User.ToList()){
+
+                    if (uID == us.LoginId){
+                      user.Name.firstName = us.Name;
+                      foreach(var ord in db.Order.ToList()){
+                        if (uID == ord.UserId){
+                          user.Orders.Add(new Order());//get back to this
+                        }
+                        
+                      }
+                      
+                      
+                    }
+
+                  }
+
                   UserConsole(user);
                   running = false;
                   break;
