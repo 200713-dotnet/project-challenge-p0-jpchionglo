@@ -10,8 +10,6 @@ namespace PizzaStore.Client
         static void Main(string[] args)
         {
             var db = new PizzaStore.Storing.PizzaStoreDBContext();
-            
-
 
             Console.WriteLine("Welcome to the PizzaStore Application!");
             bool running = true;
@@ -43,22 +41,7 @@ namespace PizzaStore.Client
 
                   }
                   
-                  
-                  foreach (var us in db.User.ToList()){
-
-                    if (uID == us.LoginId){
-                      user.Name.firstName = us.Name;
-                      foreach(var ord in db.Order.ToList()){
-                        if (uID == ord.UserId){
-                          user.Orders.Add(new Order());//get back to this
-                        }
-                        
-                      }
-                      
-                      
-                    }
-
-                  }
+                  user = updateUser(user, uID, db);
 
                   UserConsole(user);
                   running = false;
@@ -214,6 +197,85 @@ namespace PizzaStore.Client
 
         // }
 
+        public static User updateUser(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db){
+
+          //Find user
+          foreach (var us in db.User.ToList()){
+
+            if (uID == us.LoginId){
+              user.Name.firstName = us.Name;
+              
+              //Find user orders
+              foreach(var ord in db.Order.ToList()){
+                if (uID == ord.UserId){
+                  //Make Pizza, then add it to the List of Pizzas
+                  //Find order pizzas using junction table Order.Pizza
+                  foreach(var p in db.Pizza.ToList()){
+                    if (ord.OrderId == p.OrderId){
+                      List<Pizza> pizzas = new List<Pizza>();
+                      //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
+                      foreach(var p1 in db.Pizza1.ToList()){
+                        if (p.PizzaId == p.PizzaId){
+
+                          //Create new Pizza to add to order
+                          Pizza piz = new Pizza();
+
+                          //Add Crust to Pizza
+                          foreach (var c in db.Crust.ToList()){
+                            if (p1.CrustId == c.CrustId){
+                              piz.Crust = new Crust(c.Name);
+                              break;
+                            }
+                          }  
+
+                          //Add Size to Pizza
+                          foreach (var s in db.Size.ToList()){
+                            if (p1.SizeId == s.SizeId){
+                              piz.Size = new Size(s.Name);
+                              break;
+                            }
+                          }
+
+                          //Find Toppings
+                          foreach (var pt in db.PizzaTopping.ToList()){
+                            if (pt.PizzaId == p1.PizzaId){
+
+                              //Add Toppings
+                              foreach(var top in db.Topping.ToList()){
+                                if (top.ToppingId == pt.ToppingId){
+                                  piz.addTopping(new Topping(top.Name));
+                                  break;
+                                }
+                              }
+
+                            }
+
+                          }
+
+                          pizzas.Add(piz);
+
+                        }
+
+                      }
+
+                      user.Orders.Add(new Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed));
+
+                    }
+
+                  }
+
+                }
+                
+              }
+              
+              
+            }
+
+          }
+
+          return user;
+
+        }
         public static void PlaceOrder(User user){
 
           Order order = new Order();

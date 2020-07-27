@@ -188,4 +188,37 @@ insert into Pizza.Pizza(PizzaID, CrustID, SizeID, Name)
 values (4, 1, 2, 'Deluxe');
 go
 
-insert into Order.Pizza()
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (1,1,1);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (2,1,2);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (3,1,3);
+go
+
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (4,2,2);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (5,2,8);
+go
+
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (6,3,5);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (7,3,8);
+go
+
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (8,4,1);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (9,4,3);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (10,4,7);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (11,4,10);
+insert into Pizza.PizzaTopping(PizzaToppingID, PizzaID, ToppingID)
+values (12,4,9);
+go
+
+
+
