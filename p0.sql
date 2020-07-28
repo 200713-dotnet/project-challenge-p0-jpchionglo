@@ -264,3 +264,7 @@ select * from Store.Store;
 select * from [User].[User];
 select * from [User].[Login];
 go
+
+select * from [Order].[Order];
+select * from Store.Store;
+go

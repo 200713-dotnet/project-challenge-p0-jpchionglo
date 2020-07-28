@@ -6,7 +6,7 @@ using PizzaStore.Storing.Repositories;
 
 namespace PizzaStore.Client
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -104,12 +104,12 @@ namespace PizzaStore.Client
 
             if (input < i+1 && input > 0){
 
-              location.Name = db.Store.ToList()[i-1].Name;
-              sID = i;
+              location.Name = db.Store.ToList()[input-1].Name;
+              sID = input;
               
             }
 
-            user = updateUser(user, uID, db, location);
+            user = updateUser(user, uID, db);
           }
 
           while(running){
@@ -127,13 +127,11 @@ namespace PizzaStore.Client
             switch (input){
               
               case "1":
-              
+                Console.WriteLine($"-----Available Locations-----");
                 for(int k = 0; k < db.Store.ToList().Count; k++){
-
-                  Console.WriteLine($"{k+1}. {db.Store.ToList()[k]}");
-
+                  Console.WriteLine($"{k+1}. {db.Store.ToList()[k].Name}");
                 }
-
+                Console.WriteLine($"-----------------------------");
                 break;
 
               case "2":
@@ -151,14 +149,13 @@ namespace PizzaStore.Client
                 int input2 = Convert.ToInt32(Console.ReadLine());
 
 
-                if (input2 < i+1 && input2 > 0){
+                if (input2 <= i+1 && input2 > 0){
 
-                  location.Name = db.Store.ToList()[i-1].Name;
-                  sID = i;
+                  location.Name = db.Store.ToList()[input2-1].Name;
+                  sID = input2;
                   
                 }
 
-                user = updateUser(user, uID, db, location);
                 break;
 
               case "3":
@@ -186,7 +183,7 @@ namespace PizzaStore.Client
 
               case "4":
 
-                PlaceOrder(user, uID, db, sID);
+                PlaceOrder(user, uID, db, sID, location.Name);
                 break;
               
               case "5":
@@ -218,6 +215,7 @@ namespace PizzaStore.Client
 
                       Console.WriteLine($"-- Store: {user.Orders[Convert.ToInt32(input) - 1].store.Name} --");
                       Console.WriteLine(user.Orders[Convert.ToInt32(input) - 1].getPizzaList());
+                      Console.WriteLine($"-- TOTAL: ${user.Orders[Convert.ToInt32(input) -1].getPrice()}");
                       break;
 
                   }
@@ -261,7 +259,7 @@ namespace PizzaStore.Client
 
         // }
 
-        public static User updateUser(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db, Store store){
+        public static User updateUser(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db){
 
           //Find user
           foreach (var us in db.User.ToList()){
@@ -272,13 +270,27 @@ namespace PizzaStore.Client
               
               //Find user orders
               foreach(var ord in db.Order.ToList()){
+
                 if (uID == ord.UserId){
+
+                  Store store = new Store();
+
+                  foreach(var s in db.Store.ToList()){
+
+                    if (ord.StoreId == s.StoreId){
+                      store.Name = s.Name;
+                      break;
+                    }
+
+                  }
+
                   //Make Pizza, then add it to the List of Pizzas
                   //Find order pizzas using junction table Order.Pizza
                   foreach(var p in db.PizzaJunction.ToList()){
 
                     if (ord.OrderId == p.OrderId){
                       List<Pizza> pizzas = new List<Pizza>();
+
                       //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
                       foreach(var p1 in db.Pizza.ToList()){
                         if (p.PizzaId == p1.PizzaId){
@@ -370,9 +382,10 @@ namespace PizzaStore.Client
 
         // }
 
-        public static void PlaceOrder(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db, int sID){
+        public static void PlaceOrder(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db, int sID, string storeName){
 
           Order order = new Order();
+          order.store = new Store() {Name = storeName};
           
           bool running = true;
 
@@ -638,12 +651,14 @@ namespace PizzaStore.Client
                   Console.WriteLine("Order was empty, so it was canceled.");
                 } 
                 else {
-                  
+
+                  order.PlaceOrder();
+
                   //Add to database
                   PizzaRepository pr = new PizzaRepository();
                   pr.AddOrder(order,sID,uID);
 
-                  order.PlaceOrder();
+                  
                   user.Orders.Add(order);
                   
                 }

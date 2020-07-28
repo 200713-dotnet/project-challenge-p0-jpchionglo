@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace PizzaStore.Storing.Repositories{
 
     private PizzaStoreDBContext db = new PizzaStoreDBContext();
 
-    public void Create(Domain.Models.Pizza pizza){
+    public void CreatePizza(Domain.Models.Pizza pizza){
 
       var newPizza = new Pizza();
 
@@ -82,8 +83,104 @@ namespace PizzaStore.Storing.Repositories{
       db.SaveChanges();
 
     }
+    
+    public List<Domain.Models.Store> ReadAllStore(){
 
-    public List<Domain.Models.Pizza> ReadAll(){
+      List<Domain.Models.Store> stores = new List<Domain.Models.Store>();
+
+      foreach(var item in db.Store.ToList()){
+
+        stores.Add(new Domain.Models.Store(){
+
+          Name = item.Name,
+          Orders = ReadOrdersUsingStoreID(item.StoreId,item.Name)
+
+        });
+
+      }
+
+      return stores;
+
+    }
+
+    public List<Domain.Models.Order> ReadOrdersUsingStoreID(int sID, string storeName){
+      
+      List<Domain.Models.Order> orders = new List<Domain.Models.Order>();
+
+      //Find store orders
+      foreach(var ord in db.Order.ToList()){
+
+        if (sID == ord.StoreId){
+
+          //Make Pizza, then add it to the List of Pizzas
+          //Find order pizzas using junction table Order.Pizza
+          foreach(var p in db.PizzaJunction.ToList()){
+
+            if (ord.OrderId == p.OrderId){
+              List<PizzaStore.Domain.Models.Pizza> pizzas = new List<PizzaStore.Domain.Models.Pizza>();
+
+              //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
+              foreach(var p1 in db.Pizza.ToList()){
+                if (p.PizzaId == p1.PizzaId){
+
+                  //Create new Pizza to add to order
+                  PizzaStore.Domain.Models.Pizza piz = new PizzaStore.Domain.Models.Pizza();
+
+                  piz.Name = p1.Name;
+
+                  //Add Crust to Pizza
+                  foreach (var c in db.Crust.ToList()){
+                    if (p1.CrustId == c.CrustId){
+                      piz.Crust = new PizzaStore.Domain.Models.Crust(c.Name);
+                      break;
+                    }
+                  }  
+
+                  //Add Size to Pizza
+                  foreach (var s in db.Size.ToList()){
+                    if (p1.SizeId == s.SizeId){
+                      piz.Size = new PizzaStore.Domain.Models.Size(s.Name);
+                      break;
+                    }
+                  }
+
+                  //Find Toppings
+                  foreach (var pt in db.PizzaTopping.ToList()){
+                    if (pt.PizzaId == p1.PizzaId){
+
+                      //Add Toppings
+                      foreach(var top in db.Topping.ToList()){
+                        if (top.ToppingId == pt.ToppingId){
+                          piz.addTopping(new PizzaStore.Domain.Models.Topping(top.Name));
+                          break;
+                        }
+                      }
+
+                    }
+
+                  }
+
+                  pizzas.Add(piz);
+
+                }
+
+              }
+
+              orders.Add(new Domain.Models.Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed,new Domain.Models.Store(){Name = storeName}));
+
+            }
+
+          }
+
+        }
+        
+      }
+
+      return orders;
+
+    }
+
+    public List<Domain.Models.Pizza> ReadAllPizza(){
 
       List<Domain.Models.Pizza> pizzas = new List<Domain.Models.Pizza>();
 
