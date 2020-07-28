@@ -41,7 +41,8 @@ namespace PizzaStore.Client
                       foreach (var us in db.User.ToList()){
 
                         if (uID == us.LoginId){
-                          user.Name.firstName 
+                          user.Name.firstName = us.FirstName;
+                          user.Name.lastName = us.LastName;
                         }
 
                       }
@@ -225,19 +226,20 @@ namespace PizzaStore.Client
           foreach (var us in db.User.ToList()){
 
             if (uID == us.LoginId){
-              user.Name.firstName = us.Name;
+              user.Name.firstName = us.FirstName;
+              user.Name.lastName = us.LastName;
               
               //Find user orders
               foreach(var ord in db.Order.ToList()){
                 if (uID == ord.UserId){
                   //Make Pizza, then add it to the List of Pizzas
                   //Find order pizzas using junction table Order.Pizza
-                  foreach(var p in db.Pizza.ToList()){
+                  foreach(var p in db.PizzaJunction.ToList()){
 
                     if (ord.OrderId == p.OrderId){
                       List<Pizza> pizzas = new List<Pizza>();
                       //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
-                      foreach(var p1 in db.Pizza1.ToList()){
+                      foreach(var p1 in db.Pizza.ToList()){
                         if (p.PizzaId == p1.PizzaId){
 
                           //Create new Pizza to add to order

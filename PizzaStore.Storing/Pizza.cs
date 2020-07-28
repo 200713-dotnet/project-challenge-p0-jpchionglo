@@ -5,11 +5,20 @@ namespace PizzaStore.Storing
 {
     public partial class Pizza
     {
-        public int PizzaOrderId { get; set; }
-        public int? OrderId { get; set; }
-        public int? PizzaId { get; set; }
+        public Pizza()
+        {
+            PizzaJunction = new HashSet<PizzaJunction>();
+            PizzaTopping = new HashSet<PizzaTopping>();
+        }
 
-        public virtual Order Order { get; set; }
-        public virtual Pizza1 PizzaNavigation { get; set; }
+        public int PizzaId { get; set; }
+        public int? CrustId { get; set; }
+        public int? SizeId { get; set; }
+        public string Name { get; set; }
+
+        public virtual Crust Crust { get; set; }
+        public virtual Size Size { get; set; }
+        public virtual ICollection<PizzaJunction> PizzaJunction { get; set; }
+        public virtual ICollection<PizzaTopping> PizzaTopping { get; set; }
     }
 }

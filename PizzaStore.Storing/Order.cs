@@ -7,8 +7,8 @@ namespace PizzaStore.Storing
     {
         public Order()
         {
-            Order1 = new HashSet<Order1>();
-            Pizza = new HashSet<Pizza>();
+            OrderJunction = new HashSet<OrderJunction>();
+            PizzaJunction = new HashSet<PizzaJunction>();
         }
 
         public int OrderId { get; set; }
@@ -20,7 +20,7 @@ namespace PizzaStore.Storing
 
         public virtual Store Store { get; set; }
         public virtual User User { get; set; }
-        public virtual ICollection<Order1> Order1 { get; set; }
-        public virtual ICollection<Pizza> Pizza { get; set; }
+        public virtual ICollection<OrderJunction> OrderJunction { get; set; }
+        public virtual ICollection<PizzaJunction> PizzaJunction { get; set; }
     }
 }

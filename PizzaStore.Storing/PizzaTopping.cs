@@ -9,7 +9,7 @@ namespace PizzaStore.Storing
         public int? PizzaId { get; set; }
         public int? ToppingId { get; set; }
 
-        public virtual Pizza1 Pizza { get; set; }
+        public virtual Pizza Pizza { get; set; }
         public virtual Topping Topping { get; set; }
     }
 }

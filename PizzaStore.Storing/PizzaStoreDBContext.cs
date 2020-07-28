@@ -18,9 +18,9 @@ namespace PizzaStore.Storing
         public virtual DbSet<Crust> Crust { get; set; }
         public virtual DbSet<Login> Login { get; set; }
         public virtual DbSet<Order> Order { get; set; }
-        public virtual DbSet<Order1> Order1 { get; set; }
+        public virtual DbSet<OrderJunction> OrderJunction { get; set; }
         public virtual DbSet<Pizza> Pizza { get; set; }
-        public virtual DbSet<Pizza1> Pizza1 { get; set; }
+        public virtual DbSet<PizzaJunction> PizzaJunction { get; set; }
         public virtual DbSet<PizzaTopping> PizzaTopping { get; set; }
         public virtual DbSet<Size> Size { get; set; }
         public virtual DbSet<Store> Store { get; set; }
@@ -42,9 +42,7 @@ namespace PizzaStore.Storing
             {
                 entity.ToTable("Crust", "Pizza");
 
-                entity.Property(e => e.CrustId)
-                    .HasColumnName("CrustID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.CrustId).HasColumnName("CrustID");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -55,9 +53,7 @@ namespace PizzaStore.Storing
             {
                 entity.ToTable("Login", "User");
 
-                entity.Property(e => e.LoginId)
-                    .HasColumnName("LoginID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.LoginId).HasColumnName("LoginID");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
@@ -72,9 +68,7 @@ namespace PizzaStore.Storing
             {
                 entity.ToTable("Order", "Order");
 
-                entity.Property(e => e.OrderId)
-                    .HasColumnName("OrderID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
                 entity.Property(e => e.DateOrdered)
                     .IsRequired()
@@ -87,76 +81,43 @@ namespace PizzaStore.Storing
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Order)
                     .HasForeignKey(d => d.StoreId)
-                    .HasConstraintName("FK__Order__StoreID__72C60C4A");
+                    .HasConstraintName("FK__Order__StoreID__55F4C372");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Order)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Order__UserID__71D1E811");
+                    .HasConstraintName("FK__Order__UserID__55009F39");
             });
 
-            modelBuilder.Entity<Order1>(entity =>
+            modelBuilder.Entity<OrderJunction>(entity =>
             {
                 entity.HasKey(e => e.StoreOrderId)
-                    .HasName("PK__Order__A74CB93A906F38F9");
+                    .HasName("PK__OrderJun__A74CB93A57BF3209");
 
-                entity.ToTable("Order", "Store");
+                entity.ToTable("OrderJunction", "Store");
 
-                entity.Property(e => e.StoreOrderId)
-                    .HasColumnName("StoreOrderID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.StoreOrderId).HasColumnName("StoreOrderID");
 
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
                 entity.Property(e => e.StoreId).HasColumnName("StoreID");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany(p => p.Order1)
+                    .WithMany(p => p.OrderJunction)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__Order__OrderID__7A672E12");
+                    .HasConstraintName("FK__OrderJunc__Order__5D95E53A");
 
                 entity.HasOne(d => d.Store)
-                    .WithMany(p => p.Order1)
+                    .WithMany(p => p.OrderJunction)
                     .HasForeignKey(d => d.StoreId)
-                    .HasConstraintName("FK__Order__StoreID__797309D9");
+                    .HasConstraintName("FK__OrderJunc__Store__5CA1C101");
             });
 
             modelBuilder.Entity<Pizza>(entity =>
             {
-                entity.HasKey(e => e.PizzaOrderId)
-                    .HasName("PK__Pizza__EA09DF5D8686063B");
-
-                entity.ToTable("Pizza", "Order");
-
-                entity.Property(e => e.PizzaOrderId)
-                    .HasColumnName("PizzaOrderID")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.OrderId).HasColumnName("OrderID");
-
-                entity.Property(e => e.PizzaId).HasColumnName("PizzaID");
-
-                entity.HasOne(d => d.Order)
-                    .WithMany(p => p.Pizza)
-                    .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__Pizza__OrderID__75A278F5");
-
-                entity.HasOne(d => d.PizzaNavigation)
-                    .WithMany(p => p.Pizza)
-                    .HasForeignKey(d => d.PizzaId)
-                    .HasConstraintName("FK__Pizza__PizzaID__76969D2E");
-            });
-
-            modelBuilder.Entity<Pizza1>(entity =>
-            {
-                entity.HasKey(e => e.PizzaId)
-                    .HasName("PK__Pizza__0B6012FD0022EF31");
-
                 entity.ToTable("Pizza", "Pizza");
 
-                entity.Property(e => e.PizzaId)
-                    .HasColumnName("PizzaID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.PizzaId).HasColumnName("PizzaID");
 
                 entity.Property(e => e.CrustId).HasColumnName("CrustID");
 
@@ -167,23 +128,45 @@ namespace PizzaStore.Storing
                 entity.Property(e => e.SizeId).HasColumnName("SizeID");
 
                 entity.HasOne(d => d.Crust)
-                    .WithMany(p => p.Pizza1)
+                    .WithMany(p => p.Pizza)
                     .HasForeignKey(d => d.CrustId)
-                    .HasConstraintName("FK__Pizza__CrustID__4F7CD00D");
+                    .HasConstraintName("FK__Pizza__CrustID__4A8310C6");
 
                 entity.HasOne(d => d.Size)
-                    .WithMany(p => p.Pizza1)
+                    .WithMany(p => p.Pizza)
                     .HasForeignKey(d => d.SizeId)
-                    .HasConstraintName("FK__Pizza__SizeID__5070F446");
+                    .HasConstraintName("FK__Pizza__SizeID__4B7734FF");
+            });
+
+            modelBuilder.Entity<PizzaJunction>(entity =>
+            {
+                entity.HasKey(e => e.PizzaOrderId)
+                    .HasName("PK__PizzaJun__EA09DF5D3E874A08");
+
+                entity.ToTable("PizzaJunction", "Order");
+
+                entity.Property(e => e.PizzaOrderId).HasColumnName("PizzaOrderID");
+
+                entity.Property(e => e.OrderId).HasColumnName("OrderID");
+
+                entity.Property(e => e.PizzaId).HasColumnName("PizzaID");
+
+                entity.HasOne(d => d.Order)
+                    .WithMany(p => p.PizzaJunction)
+                    .HasForeignKey(d => d.OrderId)
+                    .HasConstraintName("FK__PizzaJunc__Order__58D1301D");
+
+                entity.HasOne(d => d.Pizza)
+                    .WithMany(p => p.PizzaJunction)
+                    .HasForeignKey(d => d.PizzaId)
+                    .HasConstraintName("FK__PizzaJunc__Pizza__59C55456");
             });
 
             modelBuilder.Entity<PizzaTopping>(entity =>
             {
                 entity.ToTable("PizzaTopping", "Pizza");
 
-                entity.Property(e => e.PizzaToppingId)
-                    .HasColumnName("PizzaToppingID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.PizzaToppingId).HasColumnName("PizzaToppingID");
 
                 entity.Property(e => e.PizzaId).HasColumnName("PizzaID");
 
@@ -192,21 +175,19 @@ namespace PizzaStore.Storing
                 entity.HasOne(d => d.Pizza)
                     .WithMany(p => p.PizzaTopping)
                     .HasForeignKey(d => d.PizzaId)
-                    .HasConstraintName("FK__PizzaTopp__Pizza__7D439ABD");
+                    .HasConstraintName("FK__PizzaTopp__Pizza__4E53A1AA");
 
                 entity.HasOne(d => d.Topping)
                     .WithMany(p => p.PizzaTopping)
                     .HasForeignKey(d => d.ToppingId)
-                    .HasConstraintName("FK__PizzaTopp__Toppi__7E37BEF6");
+                    .HasConstraintName("FK__PizzaTopp__Toppi__4F47C5E3");
             });
 
             modelBuilder.Entity<Size>(entity =>
             {
                 entity.ToTable("Size", "Pizza");
 
-                entity.Property(e => e.SizeId)
-                    .HasColumnName("SizeID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.SizeId).HasColumnName("SizeID");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -217,9 +198,7 @@ namespace PizzaStore.Storing
             {
                 entity.ToTable("Store", "Store");
 
-                entity.Property(e => e.StoreId)
-                    .HasColumnName("StoreID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.StoreId).HasColumnName("StoreID");
 
                 entity.Property(e => e.LoginId).HasColumnName("LoginID");
 
@@ -228,7 +207,7 @@ namespace PizzaStore.Storing
                 entity.HasOne(d => d.Login)
                     .WithMany(p => p.Store)
                     .HasForeignKey(d => d.LoginId)
-                    .HasConstraintName("FK__Store__LoginID__6B24EA82");
+                    .HasConstraintName("FK__Store__LoginID__5224328E");
             });
 
             modelBuilder.Entity<Topping>(entity =>
@@ -248,21 +227,25 @@ namespace PizzaStore.Storing
             {
                 entity.ToTable("User", "User");
 
-                entity.Property(e => e.UserId)
-                    .HasColumnName("UserID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasColumnName("firstName")
+                    .HasMaxLength(250);
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasColumnName("lastName")
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.LoginId).HasColumnName("LoginID");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(250);
 
                 entity.HasOne(d => d.Login)
                     .WithMany(p => p.User)
                     .HasForeignKey(d => d.LoginId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__User__LoginID__68487DD7");
+                    .HasConstraintName("FK__User__LoginID__42E1EEFE");
             });
 
             OnModelCreatingPartial(modelBuilder);

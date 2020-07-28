@@ -7,12 +7,12 @@ namespace PizzaStore.Storing
     {
         public Crust()
         {
-            Pizza1 = new HashSet<Pizza1>();
+            Pizza = new HashSet<Pizza>();
         }
 
         public int CrustId { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<Pizza1> Pizza1 { get; set; }
+        public virtual ICollection<Pizza> Pizza { get; set; }
     }
 }

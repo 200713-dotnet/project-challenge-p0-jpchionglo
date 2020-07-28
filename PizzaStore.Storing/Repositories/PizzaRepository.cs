@@ -10,13 +10,13 @@ namespace PizzaStore.Storing.Repositories{
 
     public void Create(Domain.Models.Pizza pizza){
 
-      var newPizza = new Pizza1();
+      var newPizza = new Pizza();
 
       newPizza.Crust = new Crust() {Name = pizza.Crust.Name};
       newPizza.Size = new Size() {Name = pizza.Size.pSize};
       newPizza.Name = pizza.Name;
 
-      db.Pizza1.Add(newPizza);
+      db.Pizza.Add(newPizza);
       db.SaveChanges();
 
     }
@@ -25,7 +25,7 @@ namespace PizzaStore.Storing.Repositories{
 
       List<Domain.Models.Pizza> pizzas = new List<Domain.Models.Pizza>();
 
-      foreach(var item in db.Pizza1.ToList()){
+      foreach(var item in db.Pizza.ToList()){
         
         pizzas.Add(new Domain.Models.Pizza(){
 

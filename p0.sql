@@ -79,7 +79,7 @@ create table [Order].[Order](
 go
 
 --Order to Pizza Junction Table
-create table [Order].Pizza(
+create table [Order].PizzaJunction(
 
   PizzaOrderID int identity(1,1) primary key,
   OrderID int foreign key references [Order].[Order](OrderID),
@@ -113,7 +113,7 @@ create table Store.Store(
 go
 
 --Store to Order junction table
-create table Store.[Order](
+create table Store.OrderJunction(
 
   StoreOrderID int identity(1,1) primary key,
   StoreID int foreign key references Store.Store(StoreID),
@@ -231,11 +231,11 @@ insert into [Order].[Order](DateOrdered, UserID, StoreID, Placed, Completed)
 values ('07/27/2020 14:36:08', 1, 1, 1, 0)
 go
 
-insert into Store.[Order](StoreID, OrderID)
+insert into Store.OrderJunction(StoreID, OrderID)
 values (1,1)
 go
 
-insert into [Order].Pizza(OrderID, PizzaID)
+insert into [Order].PizzaJunction(OrderID, PizzaID)
 values (1,1);
 go
 
@@ -253,13 +253,13 @@ drop table Pizza.Crust;
 drop table Pizza.Size;
 
 select * from [Order].[Order];
-select * from [Order].Pizza;
+select * from [Order].PizzaJunction;
 select * from Pizza.Crust;
 select * from Pizza.Pizza;
 select * from Pizza.PizzaTopping;
 select * from Pizza.Size;
 select * from Pizza.Topping;
-select * from Store.[Order];
+select * from Store.[Order;
 select * from Store.Store;
 select * from [User].[User];
 select * from [User].[Login];

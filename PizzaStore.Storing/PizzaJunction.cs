@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace PizzaStore.Storing
 {
-    public partial class Order1
+    public partial class PizzaJunction
     {
-        public int StoreOrderId { get; set; }
-        public int? StoreId { get; set; }
+        public int PizzaOrderId { get; set; }
         public int? OrderId { get; set; }
+        public int? PizzaId { get; set; }
 
         public virtual Order Order { get; set; }
-        public virtual Store Store { get; set; }
+        public virtual Pizza Pizza { get; set; }
     }
 }

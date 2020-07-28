@@ -11,7 +11,8 @@ namespace PizzaStore.Storing
         }
 
         public int UserId { get; set; }
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public int LoginId { get; set; }
 
         public virtual Login Login { get; set; }
