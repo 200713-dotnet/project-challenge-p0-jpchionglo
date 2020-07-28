@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using PizzaStore.Domain.Models;
 using System.Linq;
+using PizzaStore.Storing.Repositories;
 
 namespace PizzaStore.Client
 {
@@ -81,12 +82,33 @@ namespace PizzaStore.Client
 
           Store location = new Store();
           bool running = true;
+          int sID = 0;
 
           Console.WriteLine($"\n------------------------\nWelcome, {user.Name.firstName}!\n------------------------\n");
           Console.WriteLine($"Current Location: {location.Name}");
           
           if (location.Name.Equals("None")){
-            location = SelectStore(new Store(), db);
+
+            Console.WriteLine("Choose a Store: ");
+            int i;
+            for(i = 0; i < db.Store.ToList().Count; i++){
+
+              Console.WriteLine($"{i+1}. {db.Store.ToList()[i].Name}");
+
+            }
+
+            Console.WriteLine($"{i+1}. Cancel");
+
+            int input = Convert.ToInt32(Console.ReadLine());
+
+
+            if (input < i+1 && input > 0){
+
+              location.Name = db.Store.ToList()[i-1].Name;
+              sID = i;
+              
+            }
+
             user = updateUser(user, uID, db, location);
           }
 
@@ -106,9 +128,9 @@ namespace PizzaStore.Client
               
               case "1":
               
-                for(int j = 0; j < db.Store.ToList().Count; j++){
+                for(int k = 0; k < db.Store.ToList().Count; k++){
 
-                  Console.WriteLine($"{j+1}. {db.Store.ToList()[j]}");
+                  Console.WriteLine($"{k+1}. {db.Store.ToList()[k]}");
 
                 }
 
@@ -116,7 +138,26 @@ namespace PizzaStore.Client
 
               case "2":
 
-                location = SelectStore(location, db);
+                Console.WriteLine("Choose a Store: ");
+                int i;
+                for(i = 0; i < db.Store.ToList().Count; i++){
+
+                  Console.WriteLine($"{i+1}. {db.Store.ToList()[i].Name}");
+
+                }
+
+                Console.WriteLine($"{i+1}. Cancel");
+
+                int input2 = Convert.ToInt32(Console.ReadLine());
+
+
+                if (input2 < i+1 && input2 > 0){
+
+                  location.Name = db.Store.ToList()[i-1].Name;
+                  sID = i;
+                  
+                }
+
                 user = updateUser(user, uID, db, location);
                 break;
 
@@ -145,17 +186,17 @@ namespace PizzaStore.Client
 
               case "4":
 
-                PlaceOrder(user, uID, db);
+                PlaceOrder(user, uID, db, sID);
                 break;
               
               case "5":
 
-                int i;
-                for (i = 0; i < user.Orders.Count; i++){
-                  Console.WriteLine($"Order #{i+1}:");
-                  Console.WriteLine($"  Date Ordered: {user.Orders[i].DateOrdered.ToString()}");
-                  Console.WriteLine($"  Number of Pizzas: {user.Orders[i].Pizzas.Count}");
-                  Console.WriteLine($"  Store: {user.Orders[i].store.Name}\n");
+                int j;
+                for (j = 0; j < user.Orders.Count; j++){
+                  Console.WriteLine($"Order #{j+1}:");
+                  Console.WriteLine($"  Date Ordered: {user.Orders[j].DateOrdered.ToString()}");
+                  Console.WriteLine($"  Number of Pizzas: {user.Orders[j].Pizzas.Count}");
+                  Console.WriteLine($"  Store: {user.Orders[j].store.Name}\n");
                   
                 }
 
@@ -304,32 +345,32 @@ namespace PizzaStore.Client
 
         }
 
-        public static Store SelectStore(Store store, PizzaStore.Storing.PizzaStoreDBContext db){
+        // public static Store SelectStore(Store store, PizzaStore.Storing.PizzaStoreDBContext db){
 
-          Console.WriteLine("Choose a Store: ");
-          int i;
-          for(i = 0; i < db.Store.ToList().Count; i++){
+        //   Console.WriteLine("Choose a Store: ");
+        //   int i;
+        //   for(i = 0; i < db.Store.ToList().Count; i++){
 
-            Console.WriteLine($"{i+1}. {db.Store.ToList()[i].Name}");
+        //     Console.WriteLine($"{i+1}. {db.Store.ToList()[i].Name}");
 
-          }
+        //   }
 
-          Console.WriteLine($"{i+1}. Cancel");
+        //   Console.WriteLine($"{i+1}. Cancel");
 
-          int input = Convert.ToInt32(Console.ReadLine());
+        //   int input = Convert.ToInt32(Console.ReadLine());
 
 
-          if (input < i+1 && input > 0){
+        //   if (input < i+1 && input > 0){
 
-           store.Name = db.Store.ToList()[i-1].Name;
+        //    store.Name = db.Store.ToList()[i-1].Name;
             
-          }
+        //   }
 
-          return store;
+        //   return store;
 
-        }
+        // }
 
-        public static void PlaceOrder(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db){
+        public static void PlaceOrder(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db, int sID){
 
           Order order = new Order();
           
@@ -599,7 +640,8 @@ namespace PizzaStore.Client
                 else {
                   
                   //Add to database
-                  //addOrderToDatabase(uID, order, db);
+                  PizzaRepository pr = new PizzaRepository();
+                  pr.AddOrder(order,sID,uID);
 
                   order.PlaceOrder();
                   user.Orders.Add(order);
