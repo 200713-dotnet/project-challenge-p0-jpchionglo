@@ -12,6 +12,8 @@ namespace PizzaStore.Domain.Models
 
     public DateTime DateOrdered {get; private set;}
 
+    public Store store {get;set;}
+
     public bool Placed {get; private set;}
 
     public bool Completed {get; private set;}
@@ -22,15 +24,17 @@ namespace PizzaStore.Domain.Models
       Placed = false;
       Completed = false;
       DateOrdered = new DateTime();
+      store = new Store();
 
     }
 
-    public Order(List<Pizza> pizzas, DateTime dateOrdered, bool placed, bool completed){
+    public Order(List<Pizza> pizzas, DateTime dateOrdered, bool placed, bool completed, Store store){
 
       Pizzas = pizzas;
       DateOrdered = dateOrdered;
       Placed = placed;
       Completed = completed;
+      this.store = store;
 
     }
 

@@ -6,5 +6,18 @@ namespace PizzaStore.Domain.Models
 
     public string lastName{get;set;}
     
+    public Name(){
+
+      firstName = "";
+      lastName = "";
+
+    }
+
+    public Name(string fname, string lname){
+
+      firstName = fname;
+      lastName = lname;
+
+    }
   }
 }

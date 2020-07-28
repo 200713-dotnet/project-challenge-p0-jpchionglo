@@ -35,15 +35,23 @@ namespace PizzaStore.Client
                   int uID = 0;
                   foreach (var un in db.Login.ToList()){
                   
-                    if (un.Username.Equals(username)){
+                    if (un.Username.Equals(username) && un.Password.Equals(password)){
                       uID = un.LoginId;
+                      
+                      foreach (var us in db.User.ToList()){
+
+                        if (uID == us.LoginId){
+                          user.Name.firstName 
+                        }
+
+                      }
+
                     }
-
-                  }
                   
-                  user = updateUser(user, uID, db);
+                  }
 
-                  UserConsole(user);
+
+                  user = UserConsole(user, uID, db);
                   running = false;
                   break;
 
@@ -68,20 +76,22 @@ namespace PizzaStore.Client
             
         }
 
-        public static void UserConsole(User user){
+        public static User UserConsole(User user, int uID , PizzaStore.Storing.PizzaStoreDBContext db){
 
           Store location = new Store();
           bool running = true;
 
-          Console.WriteLine($"Welcome, {user.Name.firstName}!");
+          Console.WriteLine($"\n------------------------\nWelcome, {user.Name.firstName}!\n------------------------\n");
           Console.WriteLine($"Current Location: {location.Name}");
           
           if (location.Name.Equals("None")){
-            //location = SelectStore();
+            location = SelectStore(new Store(), db);
+            user = updateUser(user, uID, db, location);
           }
 
           while(running){
-            Console.WriteLine($"Current Location: {location.Name}");
+            Console.WriteLine("\n=====Main Menu=====");
+            Console.WriteLine($"Current Location: {location.Name}\n");
             Console.WriteLine("1. List Locations");
             Console.WriteLine("2. Select Location");
             Console.WriteLine("3. View Pricing Info");
@@ -92,15 +102,21 @@ namespace PizzaStore.Client
             string input = Console.ReadLine();
 
             switch (input){
-
+              
               case "1":
-                // for (int j = 0; j < db.Store.ToList(); j++){
-                //   Console.WriteLine($"{j}. {db.Store.ToList()[j].Name}");
-                // }
+              
+                for(int j = 0; j < db.Store.ToList().Count; j++){
+
+                  Console.WriteLine($"{j+1}. {db.Store.ToList()[j]}");
+
+                }
+
                 break;
 
               case "2":
-                //location = SelectStore();
+
+                location = SelectStore(location, db);
+                user = updateUser(user, uID, db, location);
                 break;
 
               case "3":
@@ -128,7 +144,7 @@ namespace PizzaStore.Client
 
               case "4":
 
-                PlaceOrder(user);
+                PlaceOrder(user, uID, db);
                 break;
               
               case "5":
@@ -137,7 +153,9 @@ namespace PizzaStore.Client
                 for (i = 0; i < user.Orders.Count; i++){
                   Console.WriteLine($"Order #{i+1}:");
                   Console.WriteLine($"  Date Ordered: {user.Orders[i].DateOrdered.ToString()}");
-                  Console.WriteLine($"  Number of Pizzas: {user.Orders[i].Pizzas.Count}\n");
+                  Console.WriteLine($"  Number of Pizzas: {user.Orders[i].Pizzas.Count}");
+                  Console.WriteLine($"  Store: {user.Orders[i].store.Name}\n");
+                  
                 }
 
                 bool running2 = true;
@@ -155,6 +173,8 @@ namespace PizzaStore.Client
                       break;
                     
                     default:
+
+                      Console.WriteLine($"-- Store: {user.Orders[Convert.ToInt32(input) - 1].store.Name} --");
                       Console.WriteLine(user.Orders[Convert.ToInt32(input) - 1].getPizzaList());
                       break;
 
@@ -174,6 +194,8 @@ namespace PizzaStore.Client
             }
 
           }
+
+          return user;
 
         }
 
@@ -197,7 +219,7 @@ namespace PizzaStore.Client
 
         // }
 
-        public static User updateUser(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db){
+        public static User updateUser(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db, Store store){
 
           //Find user
           foreach (var us in db.User.ToList()){
@@ -211,14 +233,17 @@ namespace PizzaStore.Client
                   //Make Pizza, then add it to the List of Pizzas
                   //Find order pizzas using junction table Order.Pizza
                   foreach(var p in db.Pizza.ToList()){
+
                     if (ord.OrderId == p.OrderId){
                       List<Pizza> pizzas = new List<Pizza>();
                       //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
                       foreach(var p1 in db.Pizza1.ToList()){
-                        if (p.PizzaId == p.PizzaId){
+                        if (p.PizzaId == p1.PizzaId){
 
                           //Create new Pizza to add to order
                           Pizza piz = new Pizza();
+
+                          piz.Name = p1.Name;
 
                           //Add Crust to Pizza
                           foreach (var c in db.Crust.ToList()){
@@ -258,7 +283,7 @@ namespace PizzaStore.Client
 
                       }
 
-                      user.Orders.Add(new Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed));
+                      user.Orders.Add(new Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed, store));
 
                     }
 
@@ -276,7 +301,33 @@ namespace PizzaStore.Client
           return user;
 
         }
-        public static void PlaceOrder(User user){
+
+        public static Store SelectStore(Store store, PizzaStore.Storing.PizzaStoreDBContext db){
+
+          Console.WriteLine("Choose a Store: ");
+          int i;
+          for(i = 0; i < db.Store.ToList().Count; i++){
+
+            Console.WriteLine($"{i+1}. {db.Store.ToList()[i].Name}");
+
+          }
+
+          Console.WriteLine($"{i+1}. Cancel");
+
+          int input = Convert.ToInt32(Console.ReadLine());
+
+
+          if (input < i+1 && input > 0){
+
+           store.Name = db.Store.ToList()[i-1].Name;
+            
+          }
+
+          return store;
+
+        }
+
+        public static void PlaceOrder(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db){
 
           Order order = new Order();
           
@@ -284,6 +335,7 @@ namespace PizzaStore.Client
 
           while(running){
 
+            Console.WriteLine("=== Editing Order ===");
             Console.WriteLine("1. Choose Preset Pizza");
             Console.WriteLine("2. Create Custom Pizza");
             Console.WriteLine("3. View Order");
@@ -297,6 +349,7 @@ namespace PizzaStore.Client
             switch (input){
 
               case "1":
+                Console.WriteLine("=== Choose Preset Pizza ===");
                 Console.WriteLine("1. Meat Lovers (Hand tossed, Pepperoni, Ham, Sausage)");
                 Console.WriteLine("2. Fred Special (Hand tossed, Ham, Pineapple)");
                 Console.WriteLine("3. Jeremy Special (Thin, Bacon, Pineapple)");
@@ -316,7 +369,7 @@ namespace PizzaStore.Client
                       pizza.addTopping(new Topping("sausage"));
                       pizza.Crust = new Crust("handtossed");
 
-                      Console.WriteLine("Choose a size:");
+                      Console.WriteLine("--Choose a size--");
                       Console.WriteLine("1. Small");
                       Console.WriteLine("2. Medium");
                       Console.WriteLine("3. Large");
@@ -353,7 +406,7 @@ namespace PizzaStore.Client
                       pizza.addTopping(new Topping("pineapple"));
                       pizza.Crust = new Crust("handtossed");
 
-                      Console.WriteLine("Choose a size:");
+                      Console.WriteLine("--Choose a size--");
                       Console.WriteLine("1. Small");
                       Console.WriteLine("2. Medium");
                       Console.WriteLine("3. Large");
@@ -390,7 +443,7 @@ namespace PizzaStore.Client
                       pizza.addTopping(new Topping("pineapple"));
                       pizza.Crust = new Crust("handtossed");
 
-                      Console.WriteLine("Choose a size:");
+                      Console.WriteLine("--Choose a size--");
                       Console.WriteLine("1. Small");
                       Console.WriteLine("2. Medium");
                       Console.WriteLine("3. Large");
@@ -427,7 +480,7 @@ namespace PizzaStore.Client
                       pizza.addTopping(new Topping("pineapple"));
                       pizza.Crust = new Crust("handtossed");
 
-                      Console.WriteLine("Choose a size:");
+                      Console.WriteLine("--Choose a size--");
                       Console.WriteLine("1. Small");
                       Console.WriteLine("2. Medium");
                       Console.WriteLine("3. Large");
@@ -536,14 +589,19 @@ namespace PizzaStore.Client
 
               case "6": //Checkout
 
-                //Add to database
+                
 
                 if (order.Pizzas.Count == 0){
                   Console.WriteLine("Order was empty, so it was canceled.");
                 } 
                 else {
+                  
+                  //Add to database
+                  //addOrderToDatabase(uID, order, db);
+
                   order.PlaceOrder();
                   user.Orders.Add(order);
+                  
                 }
                 running = false;
                 break;
@@ -563,6 +621,12 @@ namespace PizzaStore.Client
 
         }
 
+        public static void addOrderToDataBase(int uID, Order order, PizzaStore.Storing.PizzaStoreDBContext db){
+
+          
+
+        }
+
         public static Pizza EditPizza(Pizza p){
 
           List<Topping> toppings = new List<Topping>();
@@ -577,7 +641,7 @@ namespace PizzaStore.Client
             
             Console.WriteLine(pizza.getDetails());
 
-            Console.WriteLine("Please select an option:");
+            Console.WriteLine($"== Editing ");
             Console.WriteLine("1. Add Topping");
             Console.WriteLine("2. Remove Topping");
             Console.WriteLine("3. Change Size");
