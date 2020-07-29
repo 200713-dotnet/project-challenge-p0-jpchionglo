@@ -58,9 +58,32 @@ namespace PizzaStore.Client
                   break;
 
                 case "2":
-                  Store store = new Store();
+                  /* Store store = new Store();
+
                   //store login
-                  //StoreConsole(store);
+                  Console.WriteLine("Enter the store username: ");
+                  string storeUser = Console.ReadLine();
+                  Console.WriteLine("Enter the password: ");
+                  string storePass = Console.ReadLine();
+                  int sID = 0;
+                  foreach (var un in db.Login.ToList()){
+                  
+                    if (un.Username.Equals(storeUser) && un.Password.Equals(storePass)){
+                      sID = un.LoginId;
+                      foreach (var st in db.Store.ToList()){
+
+                        if (sID == st.LoginId){
+                          store.Name = st.Name;
+                        }
+
+                      }
+
+                    }
+                  
+                  }
+
+                  StoreConsole(store, db, sID); */
+                  
                   running = false;
                   break;
 
@@ -239,25 +262,17 @@ namespace PizzaStore.Client
 
         }
 
-        public void StoreConsole(Store store){
+        /* public static void StoreConsole(Store store, PizzaStore.Storing.PizzaStoreDBContext db, int sID){
 
+          bool running = true;
 
+          Console.WriteLine($"\n------------------------\nWelcome, {store.Name}!\n------------------------\n");
 
-        }
+          store.Orders = updateStore(store,sID);
 
-        // public Store SelectStore(){
+          
 
-        //   Console.WriteLine("Please Select a Store:");
-
-        //   for (int i = 0; i < db.Store.ToList(); i++){
-        //     Console.WriteLine($"{i}. {db.Store.ToList()[i].Name}");
-        //   }
-
-        //   int input = Convert.ToInt32(Console.ReadLine());
-
-        //   return db.Store.ToList()[input];
-
-        // }
+        } */
 
         public static User updateUser(User user, int uID, PizzaStore.Storing.PizzaStoreDBContext db){
 
@@ -283,13 +298,15 @@ namespace PizzaStore.Client
                     }
 
                   }
+                  
+                  List<Pizza> pizzas = new List<Pizza>();
 
                   //Make Pizza, then add it to the List of Pizzas
                   //Find order pizzas using junction table Order.Pizza
                   foreach(var p in db.PizzaJunction.ToList()){
 
                     if (ord.OrderId == p.OrderId){
-                      List<Pizza> pizzas = new List<Pizza>();
+                      
 
                       //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
                       foreach(var p1 in db.Pizza.ToList()){
@@ -338,17 +355,18 @@ namespace PizzaStore.Client
 
                       }
 
-                      user.Orders.Add(new Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed, store));
 
                     }
 
                   }
 
+                  user.Orders.Add(new Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed, store));
+
                 }
                 
               }
               
-              
+            
             }
 
           }
@@ -680,12 +698,6 @@ namespace PizzaStore.Client
 
         }
 
-        public static void addOrderToDataBase(int uID, Order order, PizzaStore.Storing.PizzaStoreDBContext db){
-
-          
-
-        }
-
         public static Pizza EditPizza(Pizza p){
 
           List<Topping> toppings = new List<Topping>();
@@ -882,4 +894,5 @@ namespace PizzaStore.Client
         }
 
     }
+
 }

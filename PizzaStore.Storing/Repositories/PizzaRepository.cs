@@ -112,13 +112,14 @@ namespace PizzaStore.Storing.Repositories{
 
         if (sID == ord.StoreId){
 
+          List<PizzaStore.Domain.Models.Pizza> pizzas = new List<PizzaStore.Domain.Models.Pizza>();
+
           //Make Pizza, then add it to the List of Pizzas
           //Find order pizzas using junction table Order.Pizza
           foreach(var p in db.PizzaJunction.ToList()){
 
             if (ord.OrderId == p.OrderId){
-              List<PizzaStore.Domain.Models.Pizza> pizzas = new List<PizzaStore.Domain.Models.Pizza>();
-
+              
               //Find Pizza referenced by Order.Pizza using Pizza.Pizza table
               foreach(var p1 in db.Pizza.ToList()){
                 if (p.PizzaId == p1.PizzaId){
@@ -166,11 +167,11 @@ namespace PizzaStore.Storing.Repositories{
 
               }
 
-              orders.Add(new Domain.Models.Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed,new Domain.Models.Store(){Name = storeName}));
-
             }
 
           }
+
+          orders.Add(new Domain.Models.Order(pizzas, Convert.ToDateTime(ord.DateOrdered),(bool)ord.Placed,(bool)ord.Completed,new Domain.Models.Store(){Name = storeName}));
 
         }
         
